@@ -8,7 +8,7 @@ GapBuffer gbinit() {
 	buf.buffer = malloc(buf.bufferSize);
 	buf.cursor = buf.buffer;
 	buf.cursorEnd = buf.cursor; // no characters at the start...
-	buf.cursorLeft = buf.buffer + buf.bufferSize; // and no characters at the end
+	buf.cursorRight = buf.buffer + buf.bufferSize; // and no characters at the end
 	
 	return buf;
 }
