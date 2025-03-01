@@ -8,10 +8,24 @@ GapBuffer gbinit() {
 	GapBuffer buf;
 	buf.bufferSize = BUFFERBLOCKSIZE;
 	buf.buffer = malloc(buf.bufferSize);
+	buf.bufferEnd = buf.buffer + buf.bufferSize - 1;
 	buf.cursorLeft = buf.buffer; // no characters at the start
-	buf.cursorRight = buf.buffer + buf.bufferSize - 1; // and no characters at the end
-	
+	buf.cursorRight = buf.bufferEnd; // and no characters at the end
+
 	return buf;
+}
+
+void gbResize(GapBuffer *buf, uint64_t remainder) {
+	if (buf->cursorLeft + remainder > buf->cursorRight) {
+		uint64_t gap = buf->cursorRight - buf->cursorLeft;
+		uint8_t offset = remainder/(buf->bufferSize - gap);
+		uint8_t *temp = realloc(buf->buffer, buf->bufferSize << offset);
+		buf->buffer = temp;
+		buf->bufferSize = buf->bufferSize << offset;
+		buf->bufferEnd = buf->buffer + buf->bufferSize - 1;
+		buf->cursorRight = buf->bufferEnd - remainder;
+		buf->cursorLeft = buf->cursorRight - gap;
+	}
 }
 
 void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
@@ -30,11 +44,10 @@ void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
 }
 
 void gbCursorForward(GapBuffer *buf, uint64_t distance) {
-	uint8_t *buf_end = buf->buffer + buf->bufferSize - 1;
 	uint64_t d2 = distance;
 
-	if (buf->cursorRight + d2 > buf_end)
-		d2 = buf_end - buf->cursorRight;
+	if (buf->cursorRight + d2 > buf->bufferEnd)
+		d2 = buf->bufferEnd - buf->cursorRight;
 
 	if (d2 == 0)
 		return;
