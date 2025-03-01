@@ -14,8 +14,8 @@ typedef struct gapBuffer {
 
 GapBuffer gbinit();
 
-void gbCursorBackward(GapBuffer *buff, uint8_t distance);
+void gbCursorBackward(GapBuffer *buf, uint64_t distance);
 
-void gbCursorForward(GapBuffer *buff, uint8_t distance);
+void gbCursorForward(GapBuffer *buf, uint64_t distance);
 
 #endif

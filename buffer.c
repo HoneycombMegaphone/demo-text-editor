@@ -14,25 +14,33 @@ GapBuffer gbinit() {
 	return buf;
 }
 
-void gbCursorBackward (GapBuffer *buf, uint8_t distance) {
-	if (buf -> buffer > buf -> cursorLeft - distance) {
-		uint8_t temp = buf -> cursorRight - buf -> cursorLeft;
-		buf -> cursorRight = buf -> cursorRight + temp;
-		buf -> cursorLeft = buf -> buffer;
-	} else {
-		buf -> cursorLeft = buf -> cursorLeft - distance;
-		buf -> cursorRight = buf -> cursorRight - distance;
-	}
-	memcpy(buf -> cursorLeft, buf -> cursorLeft + distance, buf -> cursorRight - buf -> cursorLeft);
-	return;
+void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
+	uint64_t d2 = distance;
+
+	if (buf->cursorLeft - d2 < buf->buffer)
+		d2 = buf->cursorLeft - buf->buffer;
+
+	if (d2 == 0)
+		return;
+
+	buf->cursorLeft -= d2;
+	buf->cursorRight -= d2;
+	
+	memcpy(buf->cursorRight + 1, buf->cursorLeft, d2);
 }
 
-void gbCursorForward (GapBuffer *buf, uint8_t distance) {
-	if (buf -> cursorRight > buf -> buffer + buf -> bufferSize) {
-		//resize buffer & perform action
-	}
-	buf -> cursorLeft = buf -> cursorLeft + distance;
-	buf -> cursorRight = buf -> cursorRight + distance;
-	memcpy(buf -> cursorLeft, buf -> cursorLeft - distance, buf -> cursorRight - buf -> cursorLeft);
-	return;
+void gbCursorForward(GapBuffer *buf, uint64_t distance) {
+	uint8_t *buf_end = buf->buffer + buf->bufferSize - 1;
+	uint64_t d2 = distance;
+
+	if (buf->cursorRight + d2 > buf_end)
+		d2 = buf_end - buf->cursorRight;
+
+	if (d2 == 0)
+		return;
+
+	memcpy(buf->cursorLeft, buf->cursorRight + 1, d2);
+
+	buf->cursorLeft += d2;
+	buf->cursorRight += d2;
 }
