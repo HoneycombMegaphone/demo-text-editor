@@ -15,17 +15,14 @@ GapBuffer gbinit() {
 	return buf;
 }
 
-void gbResize(GapBuffer *buf, uint64_t remainder) {
-	if (buf->cursorLeft + remainder > buf->cursorRight) {
-		uint64_t gap = buf->cursorRight - buf->cursorLeft;
-		uint8_t offset = remainder/(buf->bufferSize - gap);
-		uint8_t *temp = realloc(buf->buffer, buf->bufferSize << offset);
-		buf->buffer = temp;
-		buf->bufferSize = buf->bufferSize << offset;
-		buf->bufferEnd = buf->buffer + buf->bufferSize - 1;
-		buf->cursorRight = buf->bufferEnd - remainder;
-		buf->cursorLeft = buf->cursorRight - gap;
-	}
+void gbResize(GapBuffer *buf, uint64_t offSet) {
+	uint8_t *temp = realloc(buf->buffer, buf->bufferSize << offset);
+	uint64_t disparity = temp - buf->buffer;
+	buf->buffer = temp;
+	buf->bufferSize = buf->bufferSize << offset;
+	buf->bufferEnd = buf->buffer + buf->bufferSize - 1;
+	buf->cursorLeft = buf->bufferEnd - disparity;
+	buf->cursorRight = buf->cursorLeft + disparity;
 }
 
 void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
