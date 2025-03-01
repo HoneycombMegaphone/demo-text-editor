@@ -15,7 +15,7 @@ GapBuffer gbinit() {
 	return buf;
 }
 
-void gbResize(GapBuffer *buf, uint64_t offSet) {
+void gbResize(GapBuffer *buf, uint64_t offset) {
 	uint8_t *temp = realloc(buf->buffer, buf->bufferSize << offset);
 	uint64_t disparity = temp - buf->buffer;
 	buf->buffer = temp;
