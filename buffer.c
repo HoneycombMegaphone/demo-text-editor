@@ -42,7 +42,7 @@ void gbInsert(GapBuffer *buf, void *data, uint64_t size) {
 }
 
 void gbDelete(GapBuffer *buf, uint64_t size) {
-	if (buf->cursorLeft - size < buf->buffer) {
+	if (buf->cursorLeft - buf->buffer > size) {
 		buf->cursorLeft = buf->buffer;
 		return;
 	}
