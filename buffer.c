@@ -3,7 +3,6 @@
 #include <string.h>
 #include "buffer.h"
 
-
 GapBuffer gbinit() {
 	GapBuffer buf;
 	buf.bufferSize = BUFFERBLOCKSIZE;
@@ -17,7 +16,7 @@ GapBuffer gbinit() {
 
 void gbResize(GapBuffer *buf, uint64_t offset) {
 	uint64_t s = buf->bufferSize << offset,
-		crsize = buf->bufferEnd - buf->cursorRight;
+		 crsize = buf->bufferEnd - buf->cursorRight;
 	uint8_t *cursor_new_right, *temp = realloc(buf->buffer, s);
 	int64_t disparity = temp - buf->buffer;
 	buf->buffer = temp;
@@ -28,6 +27,26 @@ void gbResize(GapBuffer *buf, uint64_t offset) {
 	cursor_new_right = buf->bufferEnd - crsize;
 	memcpy(cursor_new_right + 1, buf->cursorRight + 1, crsize);
 	buf->cursorRight = cursor_new_right;
+}
+
+void gbInsert(GapBuffer *buf, void *data, uint64_t size) {
+	uint64_t gap = buf->cursorRight - buf->cursorLeft;
+	if (size > gap) { 
+		uint64_t offset = 0x1;
+		while(buf->bufferSize * offset + gap <= size) {
+			offset = offset<<1;
+		}
+		gbResize(buf, offset);
+		memcpy(buf->cursorLeft, data, size);
+		buf-> cursorLeft += size;
+	}
+}
+
+void gbDelete(GapBuffer *buf, uint64_t size) {
+	buf->cursorLeft -= size;
+	if (buf->cursorLeft - buf->buffer < size) {
+		buf->cursorLeft = buf->buffer;
+	}
 }
 
 void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
@@ -41,7 +60,7 @@ void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
 
 	buf->cursorLeft -= d2;
 	buf->cursorRight -= d2;
-	
+
 	memcpy(buf->cursorRight + 1, buf->cursorLeft, d2);
 }
 

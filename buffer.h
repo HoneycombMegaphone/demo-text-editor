@@ -15,6 +15,10 @@ typedef struct gapBuffer {
 
 GapBuffer gbinit();
 
+void gbInsert(GapBuffer *buf, void * data, uint64_t size);
+
+void gbDelete(GapBuffer *buf, uint64_t size);
+
 void gbCursorBackward(GapBuffer *buf, uint64_t distance);
 
 void gbCursorForward(GapBuffer *buf, uint64_t distance);
