@@ -30,23 +30,23 @@ void gbResize(GapBuffer *buf, uint64_t offset) {
 }
 
 void gbInsert(GapBuffer *buf, void *data, uint64_t size) {
-	uint64_t gap = buf->cursorRight - buf->cursorLeft;
-	if (size > gap) { 
-		uint64_t offset = 0x1;
-		while(buf->bufferSize * offset + gap <= size) {
-			offset = offset<<1;
-		}
-		gbResize(buf, offset);
-		memcpy(buf->cursorLeft, data, size);
-		buf-> cursorLeft += size;
-	}
+	uint64_t gap = buf->cursorRight - buf->cursorLeft + 1,
+		resize_power = 0;
+	while (gap < size)
+		gap += buf->bufferSize << resize_power++;
+	if (resize_power > 0)
+		gbResize(buf, resize_power);
+
+	memcpy(buf->cursorLeft, data, size);
+	buf->cursorLeft += size;
 }
 
 void gbDelete(GapBuffer *buf, uint64_t size) {
-	buf->cursorLeft -= size;
-	if (buf->cursorLeft - buf->buffer < size) {
+	if (buf->cursorLeft - size < buf->buffer) {
 		buf->cursorLeft = buf->buffer;
+		return;
 	}
+	buf->cursorLeft -= size;
 }
 
 void gbCursorBackward(GapBuffer *buf, uint64_t distance) {
