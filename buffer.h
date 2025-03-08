@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 
-#define BUFFERBLOCKSIZE 0x1000
-
 typedef struct gapBuffer {
 	uint64_t bufferSize;
 	uint8_t *buffer;
@@ -13,7 +11,7 @@ typedef struct gapBuffer {
 	uint8_t *cursorRight;
 } GapBuffer;
 
-GapBuffer gbinit();
+GapBuffer gbinit(uint64_t initial_size);
 
 void gbInsert(GapBuffer *buf, void *data, uint64_t size);
 

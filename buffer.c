@@ -3,9 +3,11 @@
 #include <string.h>
 #include "buffer.h"
 
-GapBuffer gbinit() {
+#define BUFFER_DEFAULT_SIZE 0x1000
+
+GapBuffer gbinit(uint64_t initial_size) {
 	GapBuffer buf;
-	buf.bufferSize = BUFFERBLOCKSIZE;
+	buf.bufferSize = (!initial_size) ? BUFFER_DEFAULT_SIZE : initial_size;
 	buf.buffer = malloc(buf.bufferSize);
 	buf.bufferEnd = buf.buffer + buf.bufferSize - 1;
 	buf.cursorLeft = buf.buffer; // no characters at the start
